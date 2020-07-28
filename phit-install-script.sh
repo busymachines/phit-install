@@ -33,6 +33,7 @@ PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER="$PHIT_INSTALL_TEMP_ROOT/phit-temp-clone"
 
 PHIT_INSTALL_TEMP_SBT_BIN_FOLDER="$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER/target/universal/stage"
 
+PHIT_BACKUP_PATH="$PATH" # in case of any error exist, we make sure to reset the path
 ###############################################################################
 ################################### helpers ###################################
 ###############################################################################
@@ -66,10 +67,8 @@ function clean_up_env() {
 function error_exit() {
   clean_up_temp_folder
   clean_up_env
-}
-
-function happy_exit() {
-  clean_up_temp_folder
+  PATH="$PHIT_BACKUP_PATH"
+  unset PHIT_BACKUP_PATH
 }
 
 echo ""
@@ -142,8 +141,8 @@ rm -rf "$PHIT_INSTALL_TEMP_ROOT"
 mkdir -p "$PHIT_INSTALL_TEMP_ROOT"
 
 echo ""
-echo "🔥🔥 Cloning phit repo from git: 🔥🔥"
-echo "🔥🔥  🔥git clone -b $PHIT_GIT_CLONE_BRANCH $PHIT_GIT_REPO $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
+echo "🔥 Cloning phit repo from git: 🔥🔥"
+echo "🔥   git clone -b $PHIT_GIT_CLONE_BRANCH $PHIT_GIT_REPO $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
 echo ""
 
 # we need to clone more of the repo, otherwise we won't have tags 😭
@@ -181,7 +180,7 @@ else
   echo "😭   $PHIT_GIT_REPO"
   echo "😭 "
   echo "😭 Or if you manage to manually clone the repo, the just run:"
-  echo "😭     sbt stage"
+  echo "😭     sbt mkCLIBin"
   echo "😭 "
   echo "😭 And you should be good."
   echo "😭 Goodbye."
@@ -195,8 +194,6 @@ else
 
 fi
 
-git fetch --tags
-
 # if there is no parameter to the script
 # determine latest from git tag
 if [ -z "$1" ]; then
@@ -207,6 +204,7 @@ if [ -z "$1" ]; then
   # rare case... but programming :( and it always prints out this:
   # fatal: No names found, cannot describe anything
   # which is annoying, to be honest, so we don't want that.
+  git fetch --tags 1>/dev/null
   PHIT_LATEST_VERSION=$(git describe --abbrev=0 2>/dev/null)
 
   if [ $? -eq 0 ]; then
@@ -379,7 +377,7 @@ fi
 # that's why in the README we recommend using source
 source "$PHIT_INSTALL_BASH_ENV_LOADER"
 
-happy_exit
+clean_up_temp_folder
 
 echo ""
 echo ""
@@ -391,9 +389,9 @@ echo "🔥 To have the 'phit' command available after this terminal"
 echo "🔥 session, and for every new phit installation from now on"
 echo "🔥 "
 echo "🔥 please make sure that your OS dependent terminal profile:"
-echo "🔥   ~/.bash_profile ; or ; ~/.zshrc ; or ; ~/.bashrc "
+echo "🔥 👉👉👉     ~/.bash_profile ; or ; ~/.zshrc ; or ; ~/.bashrc "
 echo "🔥 has the following:"
-echo "🔥   . $PHIT_INSTALL_BASH_ENV_LOADER"
+echo "🔥 👉👉👉     source $PHIT_INSTALL_BASH_ENV_LOADER"
 echo "🔥 "
 echo "🔥 The install script will always write that file to point"
 echo "🔥 to the latest installed phit. So you only have to do this"
@@ -403,9 +401,8 @@ echo "🔥 👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆�
 echo ""
 
 clean_up_env
+unset PHIT_BACKUP_PATH
 
-echo ""
-echo ""
 echo "🔥 Thank you for using phit, you should now be able to just run"
 echo "🔥    phit"
 echo "🔥 for further instructions simply run it and it will print out"
