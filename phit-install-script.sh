@@ -40,9 +40,9 @@ PHIT_BACKUP_PATH="$PATH" # in case of any error exist, we make sure to reset the
 
 function clean_up_temp_folder() {
   echo ""
-  echo "🔥 Cleaning up temporary git clone"
+  echo "🔥 Cleaning up temporary folders"
   echo "🔥 running:"
-  echo "🔥   rm -rf $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
+  echo "🔥   rm -rf $PHIT_INSTALL_TEMP_ROOT"
   echo ""
 
   cd "$PHIT_ORIGINAL_WD"
@@ -80,6 +80,7 @@ echo ""
 ###############################################################################
 
 if ! command -v git &>/dev/null; then
+  echo "😭 "
   echo "😭 Could not find 'git' locally. For now, it is unfortunately required"
   echo "😭 "
   echo "😭 You will also need to have your git configured to access: "
@@ -96,6 +97,7 @@ if ! command -v git &>/dev/null; then
 fi
 
 if ! command -v sbt &>/dev/null; then
+  echo "😭 "
   echo "😭 Could not find 'sbt' locally. For now, it is unfortunately required"
   echo "😭 The recommended, and most cross-platform way, of installing it is is via sdkman"
   echo "😭"
@@ -158,13 +160,14 @@ if [ $? -eq 0 ]; then
   echo ""
 
   if [ -d "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER" ]; then
-    cd "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER" || ([[ -v $PS1 ]] && return 1 || exit 1)
+    cd "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
   else
-    echo ""
+    echo "😭 "
     echo "😭 git clone succeeded but for some reason: $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER "
     echo "😭   does not exist. Can't do anything else... so giving up 😭"
     echo "😭 "
     echo "😭 Goodbye."
+    echo ""
 
     error_exit
     # imperative programming :))
@@ -175,7 +178,7 @@ if [ $? -eq 0 ]; then
   fi
 
 else
-  echo ""
+  echo "😭 "
   echo "😭 git clone failed. Please make sure you have access rights to: "
   echo "😭   $PHIT_GIT_REPO"
   echo "😭 "
@@ -184,6 +187,7 @@ else
   echo "😭 "
   echo "😭 And you should be good."
   echo "😭 Goodbye."
+  echo ""
 
   error_exit
   # imperative programming :))
@@ -244,7 +248,6 @@ else
   echo "🔥 "
   echo "🔥 if you want to install the snapshot version, then provide"
   echo "🔥 literally any argument to the install script. Like, literally."
-  echo "🔥 "
   echo ""
 fi
 
@@ -267,9 +270,10 @@ if [ $? -eq 0 ]; then
   echo ""
 else
   echo ""
-  echo "😭 sbt packing failed for some reason. See above sbt horrid output to"
-  echo "😭 find the reason, and report it please"
   echo "😭 "
+  echo "😭 sbt packing failed for some reason."
+  echo "😭 see above sbt horrid output to find the reason"
+  echo "😭 and report it please 🥺"
   echo "😭 Cleaning up as best we can..."
   echo "😭 "
   echo ""
@@ -380,9 +384,8 @@ source "$PHIT_INSTALL_BASH_ENV_LOADER"
 clean_up_temp_folder
 
 echo ""
-echo ""
 echo "🔥 phit installation complete @:"
-echo "🔥 $PHIT_INSTALL_LOCATION"
+echo "🔥 👉👉👉   $PHIT_INSTALL_LOCATION"
 echo "🔥 "
 echo "🔥 👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇👇"
 echo "🔥 To have the 'phit' command available after this terminal"
