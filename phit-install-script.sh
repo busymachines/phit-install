@@ -152,7 +152,6 @@ mkdir -p "$PHIT_INSTALL_TEMP_ROOT"
 echo ""
 echo "🔥 Cloning phit repo from git: 🔥🔥"
 echo "🔥   git clone -b $PHIT_GIT_CLONE_BRANCH $PHIT_GIT_REPO $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
-echo ""
 
 # we need to clone more of the repo, otherwise we won't have tags 😭
 git clone -b "$PHIT_GIT_CLONE_BRANCH" $PHIT_GIT_REPO "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER" #--depth 1
@@ -164,7 +163,6 @@ if [ $? -eq 0 ]; then
   echo "🔥 "
   echo "🔥 it should get cleaned up automatically... but you know"
   echo "🔥 imperative programming and resource management 😂😂🤣🤣😂"
-  echo ""
 
   if [ -d "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER" ]; then
     cd "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
@@ -240,12 +238,10 @@ if [[ $PHIT_LATEST_VERSION == "snapshot" ]]; then
   echo "🔥 🤔🤔🤔 maybe we should allow users to specify a valid"
   echo "🔥 🤔🤔🤔 version so that they can install older versions too..."
   echo "🔥 🤔🤔🤔 too complicated for now, going for this easy route"
-  echo ""
 else
   # we force the repo at the tag version
   echo ""
   echo "🔥 Making sure we git back to the tag $PHIT_LATEST_VERSION"
-  echo ""
 
   git reset --hard $PHIT_LATEST_VERSION >/dev/null
 
@@ -255,7 +251,6 @@ else
   echo "🔥 "
   echo "🔥 if you want to install the snapshot version, then provide"
   echo "🔥 literally any argument to the install script. Like, literally."
-  echo ""
 fi
 
 if [ -d "$PHIT_INSTALL_LOCATION" ]; then
@@ -270,7 +265,6 @@ echo "🔥 Running sbt... this might take a while... 😢"
 echo "🔥 we've started it with the command:"
 echo "🔥    sbt --error mkCLIBin"
 echo "🔥 but for some reason this suppresses errors as well 😂😂"
-echo ""
 
 sbt --error mkCLIBin
 
@@ -319,7 +313,6 @@ echo "🔥 moving resulting installation files:"
 echo "🔥   $PHIT_INSTALL_TEMP_SBT_BIN_FOLDER"
 echo "🔥 to:"
 echo "🔥   $PHIT_INSTALL_LOCATION"
-echo ""
 
 rm -rf "$PHIT_INSTALL_LOCATION"
 
@@ -417,11 +410,12 @@ echo "🔥 to the latest installed phit. So you only have to do this"
 echo "🔥 once per terminal profile lifetime. And phit will keep"
 echo "🔥 updating."
 echo "🔥 👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆"
-echo ""
+
 
 clean_up_env
 unset PHIT_BACKUP_PATH
 
+echo ""
 echo "🔥 Thank you for using phit, you should now be able to just run"
 echo "🔥    phit"
 echo "🔥 for further instructions simply run it and it will print out"
