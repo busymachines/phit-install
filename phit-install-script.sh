@@ -257,7 +257,6 @@ if [ -d "$PHIT_INSTALL_LOCATION" ]; then
   echo ""
   echo "🔥 $PHIT_INSTALL_LOCATION"
   echo "🔥 👆👆 install location already exists, will be completely overridden"
-  echo ""
 fi
 
 echo ""
@@ -271,7 +270,6 @@ sbt --error mkCLIBin
 if [ $? -eq 0 ]; then
   echo ""
   echo "🔥 sbt packing was a success."
-  echo ""
 else
   echo ""
   echo "😭 "
@@ -410,7 +408,6 @@ echo "🔥 to the latest installed phit. So you only have to do this"
 echo "🔥 once per terminal profile lifetime. And phit will keep"
 echo "🔥 updating."
 echo "🔥 👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆"
-
 
 clean_up_env
 unset PHIT_BACKUP_PATH
