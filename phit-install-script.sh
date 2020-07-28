@@ -259,11 +259,15 @@ if [ -d "$PHIT_INSTALL_LOCATION" ]; then
 fi
 
 echo ""
-echo "🔥 Starting sbt... this might take a while... 😢"
+echo "🔥 Running sbt... this might take a while... 😢"
+echo "🔥 we've started it with the command:"
+echo "🔥    sbt --error mkCLIBin"
+echo "🔥 but for some reason, this suppresses errors"
+echo "🔥 as well 😂😂"
 echo ""
 
-sbt mkCLIBin
-
+sbt --error mkCLIBin
+#git clone -b $PHIT_GIT_CLONE_BRANCH $PHIT_GIT_REPO $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER
 if [ $? -eq 0 ]; then
   echo ""
   echo "🔥 sbt packing was a success."
@@ -272,8 +276,12 @@ else
   echo ""
   echo "😭 "
   echo "😭 sbt packing failed for some reason."
-  echo "😭 see above sbt horrid output to find the reason"
+  echo "😭 can you please do:"
+  echo "😭   1) git clone -b $PHIT_GIT_CLONE_BRANCH $PHIT_GIT_REPO $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
+  echo "😭   2) sbt mkCLIBin # in above clone"
+  echo "😭 "
   echo "😭 and report it please 🥺"
+  echo "😭 "
   echo "😭 Cleaning up as best we can..."
   echo "😭 "
   echo ""
