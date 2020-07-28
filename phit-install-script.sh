@@ -294,11 +294,6 @@ else
   exit 1
 fi
 
-echo ""
-echo "🔥 moving files to:"
-echo "🔥  $PHIT_INSTALL_LOCATION"
-echo ""
-
 if [ ! -d "$PHIT_INSTALL_TEMP_SBT_BIN_FOLDER" ]; then
   echo ""
   echo "😭 $PHIT_INSTALL_TEMP_SBT_BIN_FOLDER"
@@ -312,6 +307,13 @@ if [ ! -d "$PHIT_INSTALL_TEMP_SBT_BIN_FOLDER" ]; then
   return 1 2>/dev/null
   exit 1
 fi
+
+echo ""
+echo "🔥 moving resulting installation files:"
+echo "🔥   $PHIT_INSTALL_TEMP_SBT_BIN_FOLDER"
+echo "🔥 to:"
+echo "🔥   $PHIT_INSTALL_LOCATION"
+echo ""
 
 rm -rf "$PHIT_INSTALL_LOCATION"
 
