@@ -75,11 +75,13 @@ function error_exit() {
   clean_up_env
   PATH="$PHIT_BACKUP_PATH"
   unset PHIT_BACKUP_PATH
+  echo ""
 }
 
 echo ""
+echo "🔥🔥"
 echo "🔥🔥 Attempting to install phit — the pureharm initialization tool 🔥🔥"
-echo ""
+echo "🔥🔥"
 
 ###############################################################################
 ############################# prerequisite checks #############################
@@ -149,11 +151,11 @@ rm -rf "$PHIT_INSTALL_TEMP_ROOT"
 mkdir -p "$PHIT_INSTALL_TEMP_ROOT"
 
 echo ""
-echo "🔥 Cloning phit repo from git: 🔥🔥"
+echo "🔥 Cloning phit repo from git:"
 echo "🔥   git clone -b $PHIT_GIT_CLONE_BRANCH $PHIT_GIT_REPO $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
 
-# we need to clone more of the repo, otherwise we won't have tags 😭
-git clone -b "$PHIT_GIT_CLONE_BRANCH" $PHIT_GIT_REPO "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER" #--depth 1
+# we can't just clone --depth 1, because then we won't have tags 😭
+(git clone -b "$PHIT_GIT_CLONE_BRANCH" $PHIT_GIT_REPO "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER") &>/dev/null
 
 if [ $? -eq 0 ]; then
   echo ""
@@ -166,6 +168,7 @@ if [ $? -eq 0 ]; then
   if [ -d "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER" ]; then
     cd "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
   else
+    echo ""
     echo "😭 "
     echo "😭 git clone succeeded but for some reason: $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER "
     echo "😭   does not exist. Can't do anything else... so giving up 😭"
@@ -182,14 +185,15 @@ if [ $? -eq 0 ]; then
   fi
 
 else
+  echo ""
   echo "😭 "
   echo "😭 git clone failed. Please make sure you have access rights to: "
   echo "😭   $PHIT_GIT_REPO"
   echo "😭 "
-  echo "😭 Or if you manage to manually clone the repo, the just run:"
-  echo "😭     sbt mkCLIBin"
+  echo "😭 Please run: "
+  echo "😭   git clone -b $PHIT_GIT_CLONE_BRANCH $PHIT_GIT_REPO $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
+  echo "😭 and report the output please 🥺"
   echo "😭 "
-  echo "😭 And you should be good."
   echo "😭 Goodbye."
   echo ""
 
@@ -277,7 +281,7 @@ else
   echo "😭   1) git clone -b $PHIT_GIT_CLONE_BRANCH $PHIT_GIT_REPO $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
   echo "😭   2) sbt mkCLIBin # in above clone"
   echo "😭 "
-  echo "😭 and report it please 🥺"
+  echo "😭 and report the output please 🥺"
   echo "😭 "
   echo "😭 Cleaning up as best we can..."
   echo "😭 "
