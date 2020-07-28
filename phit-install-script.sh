@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# used only for cosmetic printouts in case no java is installed
+PHIT_LATEST_JAVA='11.0.8.hs-adpt'
+
+PHIT_ORIGINAL_WD=$(pwd)
+
+PHIT_GIT_REPO='git@gitlab.com:busymachines/phit.git'
 # for debugging the script or a new release, we might
 # want to use a different branch than master
 # end users have no reason to ever set this value
@@ -8,18 +14,11 @@ if [ -n "$PHIT_OVERRIDE_GIT_CLONE_BRANCH" ]; then
 else
   PHIT_GIT_CLONE_BRANCH='master'
 fi
-
-# this should always be set to the the latest STABLE tag in our github repo
-LATEST_JAVA='11.0.8.hs-adpt'
-GIT_REPO='git@gitlab.com:busymachines/phit.git'
-LATEST_PHIT='' # set in script after based on git repo
+PHIT_LATEST_VERSION='' # set in script after based on git tags
 
 #where final instalations go to
 PHIT_INSTALL_ROOT="$HOME/.sbt/phit"
 PHIT_INSTALL_LOCATION='' # set in script after git clone
-
-#where temporary installation folders do to.
-PHIT_INSTALL_TEMP_ROOT="$PHIT_INSTALL_ROOT/z-install-files"
 
 # this file contains everything that the user should add to their PATH
 # to make phit available. The installer will prompt the user to add this
@@ -28,10 +27,11 @@ PHIT_INSTALL_TEMP_ROOT="$PHIT_INSTALL_ROOT/z-install-files"
 # script writes to their bash environment
 PHIT_INSTALL_BASH_ENV_LOADER="$PHIT_INSTALL_ROOT/phit-load-env.sh"
 
-ORIGINAL_LOCATION=$(pwd)
+#where temporary installation folders do to.
+PHIT_INSTALL_TEMP_ROOT="$PHIT_INSTALL_ROOT/z-install-files"
+PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER="$PHIT_INSTALL_TEMP_ROOT/phit-temp-clone"
 
-TEMP_PHIT_FOLDER="$PHIT_INSTALL_TEMP_ROOT/phit_temp_install"
-PHIT_SBT_BIN_FOLDER="$TEMP_PHIT_FOLDER/target/universal/stage"
+PHIT_INSTALL_TEMP_SBT_BIN_FOLDER="$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER/target/universal/stage"
 
 ###############################################################################
 ################################### helpers ###################################
@@ -41,31 +41,31 @@ function clean_up_temp_folder() {
   echo ""
   echo "🔥 Cleaning up temporary git clone"
   echo "🔥 running:"
-  echo "🔥   rm -rf $TEMP_PHIT_FOLDER"
+  echo "🔥   rm -rf $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
   echo ""
 
-  cd "$ORIGINAL_LOCATION"
-  rm -rf $TEMP_PHIT_FOLDER
+  cd "$PHIT_ORIGINAL_WD"
+  rm -rf $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER
   rm -rf $PHIT_INSTALL_TEMP_ROOT
 }
 
 function clean_up_env() {
-  unset LATEST_JAVA
-  unset GIT_REPO
+  unset PHIT_ORIGINAL_WD
+  unset PHIT_LATEST_JAVA
+  unset PHIT_GIT_REPO
   unset PHIT_GIT_CLONE_BRANCH
-  unset LATEST_PHIT
+  unset PHIT_LATEST_VERSION
   unset PHIT_INSTALL_ROOT
   unset PHIT_INSTALL_LOCATION
   unset PHIT_INSTALL_TEMP_ROOT
   unset PHIT_INSTALL_BASH_ENV_LOADER
-  unset ORIGINAL_LOCATION
-  unset TEMP_PHIT_FOLDER
-  unset PHIT_SBT_BIN_FOLDER
+  unset PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER
+  unset PHIT_INSTALL_TEMP_SBT_BIN_FOLDER
 }
 
 function error_exit() {
-  clean_up_env
   clean_up_temp_folder
+  clean_up_env
 }
 
 function happy_exit() {
@@ -105,7 +105,7 @@ if ! command -v sbt &>/dev/null; then
   echo "😭 "
   echo "😭 and after you have sdk man, install the Java version of your choice: "
   echo "😭   sdk list java"
-  echo "😭   sdk install java $LATEST_JAVA"
+  echo "😭   sdk install java $PHIT_LATEST_JAVA"
   echo "😭 "
   echo "😭   we might forget 👆👆👆👆👆👆👆 to update the latest version of java here"
   echo "😭   so please double check what you will be installing"
@@ -143,26 +143,26 @@ mkdir -p "$PHIT_INSTALL_TEMP_ROOT"
 
 echo ""
 echo "🔥🔥 Cloning phit repo from git: 🔥🔥"
-echo "🔥🔥  🔥git clone -b $PHIT_GIT_CLONE_BRANCH $GIT_REPO $TEMP_PHIT_FOLDER"
+echo "🔥🔥  🔥git clone -b $PHIT_GIT_CLONE_BRANCH $PHIT_GIT_REPO $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
 echo ""
 
 # we need to clone more of the repo, otherwise we won't have tags 😭
-git clone -b "$PHIT_GIT_CLONE_BRANCH" $GIT_REPO "$TEMP_PHIT_FOLDER" #--depth 1
+git clone -b "$PHIT_GIT_CLONE_BRANCH" $PHIT_GIT_REPO "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER" #--depth 1
 
 if [ $? -eq 0 ]; then
   echo ""
   echo "🔥 git clone was a success. You will find the temp folder here: "
-  echo "🔥   cd $TEMP_PHIT_FOLDER"
+  echo "🔥   cd $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER"
   echo "🔥 "
   echo "🔥 it should get cleaned up automatically... but you know"
   echo "🔥 imperative programming and resource management 😂😂🤣🤣😂"
   echo ""
 
-  if [ -d "$TEMP_PHIT_FOLDER" ]; then
-    cd "$TEMP_PHIT_FOLDER" || ([[ -v $PS1 ]] && return 1 || exit 1)
+  if [ -d "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER" ]; then
+    cd "$PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER" || ([[ -v $PS1 ]] && return 1 || exit 1)
   else
     echo ""
-    echo "😭 git clone succeeded but for some reason: $TEMP_PHIT_FOLDER "
+    echo "😭 git clone succeeded but for some reason: $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER "
     echo "😭   does not exist. Can't do anything else... so giving up 😭"
     echo "😭 "
     echo "😭 Goodbye."
@@ -178,7 +178,7 @@ if [ $? -eq 0 ]; then
 else
   echo ""
   echo "😭 git clone failed. Please make sure you have access rights to: "
-  echo "😭   $GIT_REPO"
+  echo "😭   $PHIT_GIT_REPO"
   echo "😭 "
   echo "😭 Or if you manage to manually clone the repo, the just run:"
   echo "😭     sbt stage"
@@ -207,23 +207,23 @@ if [ -z "$1" ]; then
   # rare case... but programming :( and it always prints out this:
   # fatal: No names found, cannot describe anything
   # which is annoying, to be honest, so we don't want that.
-  LATEST_PHIT=$(git describe --abbrev=0 2>/dev/null)
+  PHIT_LATEST_VERSION=$(git describe --abbrev=0 2>/dev/null)
 
   if [ $? -eq 0 ]; then
-    echo "$LATEST_PHIT"
+    echo "$PHIT_LATEST_VERSION"
     # nothing
   else
-    LATEST_PHIT="snapshot"
+    PHIT_LATEST_VERSION="snapshot"
   fi
 else
-  LATEST_PHIT="snapshot"
+  PHIT_LATEST_VERSION="snapshot"
 fi
 
-PHIT_INSTALL_LOCATION="$PHIT_INSTALL_ROOT/$LATEST_PHIT"
+PHIT_INSTALL_LOCATION="$PHIT_INSTALL_ROOT/$PHIT_LATEST_VERSION"
 
-if [[ $LATEST_PHIT == "snapshot" ]]; then
+if [[ $PHIT_LATEST_VERSION == "snapshot" ]]; then
   echo ""
-  echo "🔥 Installing latest and greatest $LATEST_PHIT"
+  echo "🔥 Installing latest and greatest $PHIT_LATEST_VERSION"
   echo "🔥 "
   echo "🔥 if you want to install a stable version, then just don't"
   echo "🔥 specify any parameter."
@@ -235,13 +235,13 @@ if [[ $LATEST_PHIT == "snapshot" ]]; then
 else
   # we force the repo at the tag version
   echo ""
-  echo "🔥 Making sure we git back to the tag $LATEST_PHIT"
+  echo "🔥 Making sure we git back to the tag $PHIT_LATEST_VERSION"
   echo ""
 
-  git reset --hard $LATEST_PHIT >/dev/null
+  git reset --hard $PHIT_LATEST_VERSION >/dev/null
 
   echo ""
-  echo "🔥 Installing latest stable version of phit: $LATEST_PHIT"
+  echo "🔥 Installing latest stable version of phit: $PHIT_LATEST_VERSION"
   echo "🔥   to: $PHIT_INSTALL_LOCATION"
   echo "🔥 "
   echo "🔥 if you want to install the snapshot version, then provide"
@@ -289,9 +289,9 @@ echo "🔥 moving files to:"
 echo "🔥  $PHIT_INSTALL_LOCATION"
 echo ""
 
-if [ ! -d "$PHIT_SBT_BIN_FOLDER" ]; then
+if [ ! -d "$PHIT_INSTALL_TEMP_SBT_BIN_FOLDER" ]; then
   echo ""
-  echo "😭 $PHIT_SBT_BIN_FOLDER"
+  echo "😭 $PHIT_INSTALL_TEMP_SBT_BIN_FOLDER"
   echo "😭 👆👆 was not written by sbt, even though it should have been"
   echo ""
 
@@ -321,13 +321,13 @@ if [ ! -d "$PHIT_INSTALL_ROOT" ]; then
   exit 1
 fi
 
-mv "$PHIT_SBT_BIN_FOLDER" "$PHIT_INSTALL_LOCATION"
+mv "$PHIT_INSTALL_TEMP_SBT_BIN_FOLDER" "$PHIT_INSTALL_LOCATION"
 
 if [ ! -d "$PHIT_INSTALL_LOCATION" ]; then
   echo ""
   echo "😭 $PHIT_INSTALL_LOCATION"
   echo "😭 👆👆was not written after attempting to move:"
-  echo "😭    $PHIT_SBT_BIN_FOLDER"
+  echo "😭    $PHIT_INSTALL_TEMP_SBT_BIN_FOLDER"
   echo "😭 "
   echo "😭 Goodbye 😭"
   echo ""
@@ -352,13 +352,13 @@ fi
 touch "$PHIT_INSTALL_BASH_ENV_LOADER"
 chmod u+x "$PHIT_INSTALL_BASH_ENV_LOADER"
 
-EXPORT_NEW_PATH_COMMAND="export PATH=\"$PHIT_INSTALL_LOCATION/bin::\$PATH\""
+PHIT_TEMP_EXPORT_NEW_PATH_COMMAND="export PATH=\"$PHIT_INSTALL_LOCATION/bin::\$PATH\""
 
 echo "#!/bin/bash" >>"$PHIT_INSTALL_BASH_ENV_LOADER"
-echo "$EXPORT_NEW_PATH_COMMAND" >>"$PHIT_INSTALL_BASH_ENV_LOADER"
+echo "$PHIT_TEMP_EXPORT_NEW_PATH_COMMAND" >>"$PHIT_INSTALL_BASH_ENV_LOADER"
 echo "" >>"$PHIT_INSTALL_BASH_ENV_LOADER"
 
-unset EXPORT_NEW_PATH_COMMAND
+unset PHIT_TEMP_EXPORT_NEW_PATH_COMMAND
 
 if [ ! -f "$PHIT_INSTALL_BASH_ENV_LOADER" ]; then
   echo ""
