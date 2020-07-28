@@ -9,6 +9,13 @@ PHIT_GIT_REPO='git@gitlab.com:busymachines/phit.git'
 # for debugging the script or a new release, we might
 # want to use a different branch than master
 # end users have no reason to ever set this value
+# so to debug, just do before running the script:
+#
+# export PHIT_OVERRIDE_GIT_CLONE_BRANCH='my-branch-name'
+#
+# then restart terminal, or run:
+# unset PHIT_OVERRIDE_GIT_CLONE_BRANCH
+#
 if [ -n "$PHIT_OVERRIDE_GIT_CLONE_BRANCH" ]; then
   PHIT_GIT_CLONE_BRANCH="$PHIT_OVERRIDE_GIT_CLONE_BRANCH"
 else
@@ -262,12 +269,11 @@ echo ""
 echo "🔥 Running sbt... this might take a while... 😢"
 echo "🔥 we've started it with the command:"
 echo "🔥    sbt --error mkCLIBin"
-echo "🔥 but for some reason, this suppresses errors"
-echo "🔥 as well 😂😂"
+echo "🔥 but for some reason this suppresses errors as well 😂😂"
 echo ""
 
 sbt --error mkCLIBin
-#git clone -b $PHIT_GIT_CLONE_BRANCH $PHIT_GIT_REPO $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER
+
 if [ $? -eq 0 ]; then
   echo ""
   echo "🔥 sbt packing was a success."
