@@ -50,7 +50,6 @@ function clean_up_temp_folder() {
   echo "🔥 Cleaning up temporary folders"
   echo "🔥 running:"
   echo "🔥   rm -rf $PHIT_INSTALL_TEMP_ROOT"
-  echo ""
 
   cd "$PHIT_ORIGINAL_WD"
   rm -rf $PHIT_INSTALL_TEMP_GIT_CLONE_FOLDER
@@ -354,7 +353,6 @@ if [ -f "$PHIT_INSTALL_BASH_ENV_LOADER" ]; then
   echo ""
   echo "🔥 $PHIT_INSTALL_BASH_ENV_LOADER"
   echo "🔥 👆👆 already exists, will be overridden"
-  echo ""
   rm "$PHIT_INSTALL_BASH_ENV_LOADER"
 fi
 
