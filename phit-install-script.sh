@@ -12,7 +12,7 @@ fi
 # this should always be set to the the latest STABLE tag in our github repo
 LATEST_JAVA='11.0.8.hs-adpt'
 GIT_REPO='git@gitlab.com:busymachines/phit.git'
-LATEST_PHIT=''# set in script after based on git repo
+LATEST_PHIT='' # set in script after based on git repo
 
 #where final instalations go to
 PHIT_INSTALL_ROOT="$HOME/.sbt/phit"
@@ -49,7 +49,22 @@ function clean_up_temp_folder() {
   rm -rf $PHIT_INSTALL_TEMP_ROOT
 }
 
+function clean_up_env() {
+  unset LATEST_JAVA
+  unset GIT_REPO
+  unset PHIT_GIT_CLONE_BRANCH
+  unset LATEST_PHIT
+  unset PHIT_INSTALL_ROOT
+  unset PHIT_INSTALL_LOCATION
+  unset PHIT_INSTALL_TEMP_ROOT
+  unset PHIT_INSTALL_BASH_ENV_LOADER
+  unset ORIGINAL_LOCATION
+  unset TEMP_PHIT_FOLDER
+  unset PHIT_SBT_BIN_FOLDER
+}
+
 function error_exit() {
+  clean_up_env
   clean_up_temp_folder
 }
 
@@ -386,6 +401,8 @@ echo "🔥 once per terminal profile lifetime. And phit will keep"
 echo "🔥 updating."
 echo "🔥 👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆👆"
 echo ""
+
+clean_up_env
 
 echo ""
 echo ""
